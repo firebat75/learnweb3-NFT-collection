@@ -142,7 +142,7 @@ export default function Home() {
   const getTokenIdsMinted = async () => { // getTokenIdsMinted: gets the number of tokenIds that have been minted
     try {
       const provider = await getProviderOrSigner();
-      const nftContract = NewContract(NFT_CONTRACT_ADDRESS, abi, provider);
+      const nftContract = nftContract(NFT_CONTRACT_ADDRESS, abi, provider);
       const _tokenIds = await nftContract.tokenIds();
       // _tokenIds is a `big number`, we need to convert it to a string
       setTokenIdsMinted(_tokenIds.toString());
