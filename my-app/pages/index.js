@@ -48,4 +48,35 @@ export default function Home() {
   };
 
 
-};
+  const connectWallet = async () => {
+    try {
+      await getProviderOrSigner();
+      setWalletConnected(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  const startPresale = async () => { // startPresale: starts the presale for the NFT collection
+    try {
+      const signer = await getProviderOrSigner(true);
+      const whitelistContract = new Contract(NFT_CONTRACT_ADDRESS, abi, signer);
+
+      // call the startPresale from the contract
+      const tx = await whitelistContract.startPresale();
+      setLoading(true);
+      await tx.wait()
+      setLoading(false);
+
+      // set presale started to true
+      await checkIfPresaleStarted();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
+
+}
