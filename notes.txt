@@ -1,0 +1,8 @@
+NFT Collection Contract:
+0x52E9Ece40d6E1653D90820175fC2177be1e4f1c6
+
+New Contract Address:
+0x0Ecf9411Ba776c18Ce1fc20cDa8E8F96EB30095E
+
+Deployed URL:
+https://learnweb3-nft-collection-psi.vercel.app/
