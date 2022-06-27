@@ -15,7 +15,7 @@ async function main() {
     const cryptoDevsContract = await ethers.getContractFactory("CryptoDevs");
 
     // deploy the contract
-    const deployedCryptoDevsContract = await cryptoDevsContract.deploy(metadataURL, whitelistContract);
+    const deployedCryptoDevsContract = await cryptoDevsContract.deploy(metaDataURL, whitelistContract);
 
     // print the address of the deployed contract
     console.log("Crypto Devs Contract Address:", deployedCryptoDevsContract);
