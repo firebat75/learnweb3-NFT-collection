@@ -78,5 +78,49 @@ export default function Home() {
 
 
 
+  const checkIfPresaleStarted = async () => { // checkIfPresaleStarted: querys' `presaleStarted` var in contract
+    try {
+      const provider = await getProviderOrSigner();
+
+      // we connect to contract as a provider so we have read-only access to the contract
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
+      // call the presaleStarted from the contract
+      const _presaleStarted = await nftContract.presaleStarted();
+
+      if (!_presaleStarted) {
+        await getOwner();
+      }
+      setPresaleStarted(_presaleStarted);
+      return _presaleStarted;
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+  const checkIfPresaleEnded = async () => { // checkIfPresaleEnded: querys' `presaleEnded` var in contract
+    try {
+      const provider = await getProviderOrSigner();
+
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
+      const _presaleEnded = await nftContract.presaleEnded();
+
+      // _presaleEnded is a big number, so we use lt(less than function) instead of '<'
+      // Date.now()/1000 returns the current time in seconds
+      // We compare if the _presaleEnded timestamp is less than the current time
+      // which means presale has ended
+      const hasEnded = _presaleEnded.lt(Math.floor(Date.now() / 1000));
+      if (hasEnded) {
+        setPresaleEnded(true);
+      } else {
+        setPresaleEnded(false);
+      }
+      return hasEnded;
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  };
+
 
 }
