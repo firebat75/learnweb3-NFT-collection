@@ -1,4 +1,4 @@
-import { Contract, provider, utils } from "ethers";
+import { Contract, provider, providers, utils } from "ethers";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 import Web3Modal, { getProviderDescription } from "web3modal";
@@ -72,7 +72,7 @@ export default function Home() {
       // set presale started to true
       await checkIfPresaleStarted();
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -93,7 +93,7 @@ export default function Home() {
       setPresaleStarted(_presaleStarted);
       return _presaleStarted;
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
@@ -117,10 +117,57 @@ export default function Home() {
       }
       return hasEnded;
     } catch (err) {
-      console.log(err);
+      console.error(err);
       return false;
     }
   };
 
+  const getOwner = async () => { // getOwner: calls the contract to retrieve the owner
+    try {
+      const provider = await getProviderOrSigner();
+      const nftContract = new Contract(NFT_CONTRACT_ADDRESS, abi, provider);
 
+      const _owner = await nftContract.owner();
+      const signer = await getProviderOrSigner(true);
+      const address = await signer.getAddress(); // address associated with metamask account
+
+      if (address.toLowerCase() === _owner.toLowerCase()) {
+        setIsOwner(true);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const getTokenIdsMinted = async () => { // getTokenIdsMinted: gets the number of tokenIds that have been minted
+    try {
+      const provider = await getProviderOrSigner();
+      const nftContract = NewContract(NFT_CONTRACT_ADDRESS, abi, provider);
+      const _tokenIds = await nftContract.tokenIds();
+      // _tokenIds is a `big number`, we need to convert it to a string
+      setTokenIdsMinted(_tokenIds.toString());
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // @param{*}needSigner - True if you need the signer, default false otherwise
+  const getProviderOrSigner = async (needSigner = false) => {
+    // connect to metamask, store web3modal as a reference to access underlying object
+    const provider = await web3ModalRef.current.connect();
+    const web3Provider = new providers.Web3Provider(provider);
+
+    // if user it not connected to Rinkeby, throw an error
+    const { chainId } = await web3Provider.getNetwork();
+    if (chainId !== 4) {
+      window.alert("Change the network to Rinkeby");
+      throw new Error("Change network to Rinkeby");
+    }
+
+    if (needSigner) {
+      const signer = web3Provider.getSigner();
+      return signer;
+    }
+    return web3Provider;
+  };
 }
